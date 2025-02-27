@@ -123,9 +123,7 @@ def calculate_price_change(df):
     price_change = (last_value-first_value)/first_value
     return price_change
 API_URL = 'https://api.bitget.com'
-API_SECRET_KEY = 'ca8d708b774782ce0fd09c78ba5c19e1e421d5fd2a78964359e6eb306cf15c67'
-API_KEY = 'bg_42d96db83714abb3757250cef9ba7752'
-PASSPHRASE = 'HBLww130130130'
+
 margein_coin = 'USDT'
 futures_type = 'USDT-FUTURES'
 order_value = 2000
