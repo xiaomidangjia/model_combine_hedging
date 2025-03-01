@@ -123,7 +123,9 @@ def calculate_price_change(df):
     price_change = (last_value-first_value)/first_value
     return price_change
 API_URL = 'https://api.bitget.com'
-
+API_SECRET_KEY = 'ca8d708b774782ce0fd09c78ba5c19e1e421d5fd2a78964359e6eb306cf15c67'
+API_KEY = 'bg_42d96db83714abb3757250cef9ba7752'
+PASSPHRASE = 'HBLww130130130'
 margein_coin = 'USDT'
 futures_type = 'USDT-FUTURES'
 order_value = 2000
@@ -904,6 +906,42 @@ while True:
             ins = pd.DataFrame({'coin_1_name':coin_1,'coin_2_name':coin_2,'deviation_degree':deviation_degree,'corr_value':corr_value},index=[0])
             #print(ins)
             look_df = pd.concat([look_df,ins])
+        #======================================自动发邮件
+        import smtplib
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+        import pandas as pd
+        # 将DataFrame转换为HTML表格
+        html_table1 = look_df.to_html(index=False)
+        date_now = str(datetime.utcnow())[0:10]
+        # 定义HTML内容，包含两个表格
+        html_content = f"""
+        <html>
+          <body>
+            <p>您好，</p>
+            <p>以下是模型4结果的明细表：</p>
+            {html_table1}
+            <br>
+            <p>模型4开始时间：{data_start},结束时间{data_end}：</p>
+            <p>祝好，<br>卡森</p>
+          </body>
+        </html>
+        """
+        #设置服务器所需信息
+        #163邮箱服务器地址
+        mail_host = 'smtp.163.com'
+        #163用户名
+        mail_user = 'lee_daowei@163.com'  
+        #密码(部分邮箱为授权码) 
+        mail_pass = 'GKXGKVGTYBGRMAVE'   
+        #邮件发送方邮箱地址
+        sender = 'lee_daowei@163.com'  
+
+        #邮件接受方邮箱地址，注意需要[]包裹，这意味着你可以写多个邮件地址群发
+        receivers = ['lee_daowei@163.com']  
+        context = f'模型4结果明细{date_now}'
+        email_sender(mail_host,mail_user,mail_pass,sender,receivers,context,html_content)
+        # ==========================================================================
         look_df = look_df[(look_df.corr_value>0.7)]
         if len(look_df) == 0:
             coin_long = None
