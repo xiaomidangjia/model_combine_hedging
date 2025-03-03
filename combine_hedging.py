@@ -128,7 +128,7 @@ API_KEY = 'bg_42d96db83714abb3757250cef9ba7752'
 PASSPHRASE = 'HBLww130130130'
 margein_coin = 'USDT'
 futures_type = 'USDT-FUTURES'
-order_value = 20
+order_value = 1200
 contract_num = 20
 
 def get_timestamp():
@@ -377,7 +377,7 @@ while True:
     date_part = dt.date() + timedelta(days=1)
     hour_part = dt.hour
     minute_part = int(dt.minute)
-    if int(hour_part)==13 and minute_part <= 53:
+    if int(hour_part)==8 and minute_part <= 3:
         # ====================================== 模型1 ===================================
         logo = 0
         while logo == 0:
@@ -1011,42 +1011,7 @@ while True:
             ins = pd.DataFrame({'coin_1_name':coin_1,'coin_2_name':coin_2,'deviation_degree':deviation_degree,'corr_value':corr_value},index=[0])
             #print(ins)
             look_df = pd.concat([look_df,ins])
-        #======================================自动发邮件
-        import smtplib
-        from email.mime.multipart import MIMEMultipart
-        from email.mime.text import MIMEText
-        import pandas as pd
-        # 将DataFrame转换为HTML表格
-        html_table1 = look_df.to_html(index=False)
-        date_now = str(datetime.utcnow())[0:10]
-        # 定义HTML内容，包含两个表格
-        html_content = f"""
-        <html>
-          <body>
-            <p>您好，</p>
-            <p>以下是模型4结果的明细表：</p>
-            {html_table1}
-            <br>
-            <p>模型4开始时间：{data_start},结束时间{data_end}：</p>
-            <p>祝好，<br>卡森</p>
-          </body>
-        </html>
-        """
-        #设置服务器所需信息
-        #163邮箱服务器地址
-        mail_host = 'smtp.163.com'
-        #163用户名
-        mail_user = 'lee_daowei@163.com'  
-        #密码(部分邮箱为授权码) 
-        mail_pass = 'GKXGKVGTYBGRMAVE'   
-        #邮件发送方邮箱地址
-        sender = 'lee_daowei@163.com'  
 
-        #邮件接受方邮箱地址，注意需要[]包裹，这意味着你可以写多个邮件地址群发
-        receivers = ['lee_daowei@163.com']  
-        context = f'模型4结果明细{date_now}'
-        email_sender(mail_host,mail_user,mail_pass,sender,receivers,context,html_content)
-        # ==========================================================================
         look_df = look_df[(look_df.corr_value>0.7)]
         if len(look_df) == 0:
             coin_long = None
@@ -1082,6 +1047,42 @@ while True:
         monitor_model_res = monitor_model_res.dropna()
         monitor_model_res = monitor_model_res.sort_values(by='model')
         monitor_model_res = monitor_model_res.reset_index(drop=True)
+        #======================================自动发邮件
+        import smtplib
+        from email.mime.multipart import MIMEMultipart
+        from email.mime.text import MIMEText
+        import pandas as pd
+        # 将DataFrame转换为HTML表格
+        html_table1 = monitor_model_res.to_html(index=False)
+        date_now = str(datetime.utcnow())[0:10]
+        # 定义HTML内容，包含两个表格
+        html_content = f"""
+        <html>
+          <body>
+            <p>您好，</p>
+            <p>以下是模型结果的明细表：</p>
+            {html_table1}
+            <br>
+            <p>模型4开始时间：{data_start},结束时间{data_end}：</p>
+            <p>祝好，<br>卡森</p>
+          </body>
+        </html>
+        """
+        #设置服务器所需信息
+        #163邮箱服务器地址
+        mail_host = 'smtp.163.com'
+        #163用户名
+        mail_user = 'lee_daowei@163.com'  
+        #密码(部分邮箱为授权码) 
+        mail_pass = 'GKXGKVGTYBGRMAVE'   
+        #邮件发送方邮箱地址
+        sender = 'lee_daowei@163.com'  
+
+        #邮件接受方邮箱地址，注意需要[]包裹，这意味着你可以写多个邮件地址群发
+        receivers = ['lee_daowei@163.com']  
+        context = f'模型4结果明细{date_now}'
+        email_sender(mail_host,mail_user,mail_pass,sender,receivers,context,html_content)
+        # ==========================================================================
         # ==================================== 开关单监控 ========================================
         judge = 0
         while judge == 0:
@@ -1105,7 +1106,7 @@ while True:
                     response_1_res = response_1['data']['marginMode']
 
                     content_mode = f'{crypto_usdt}调整保证金模式:'+str(response_1_res) + '\n'
-                    write_txt(content_mode)
+                    #write_txt(content_mode)
 
                     # 调整杠杆（全仓）
                     timestamp = get_timestamp()
@@ -1121,7 +1122,7 @@ while True:
                     response_2_long = response_2['data']['longLeverage']
                     response_2_short = response_2['data']['shortLeverage']
                     content_leverage = f'{crypto_usdt}调整全仓杠杆:' +'多'+str(response_2_long)+'空'+str(response_2_short) + '\n'
-                    write_txt(content_mode)
+                    #write_txt(content_mode)
 
                     # 获取币种的价格小数位，开仓量小数位
                     timestamp = get_timestamp()
@@ -1139,7 +1140,7 @@ while True:
                     volumePlace = int(ticker['data'][0].get('volumePlace'))
                     pricePlace = int(ticker['data'][0].get('pricePlace'))
                     content_contracts = f'{crypto_usdt}数量和价格精度：'+str(volumePlace)+str('----')+str(pricePlace) + '\n'
-                    write_txt(content_contracts)
+                    #write_txt(content_contracts)
 
                     all_volumePlace[str(crypto_usdt)] = volumePlace
                     all_pricePlace[str(crypto_usdt)] = pricePlace
@@ -1172,7 +1173,7 @@ while True:
                     #open_oder_info = pd.concat([open_oder_info,order_info])
                 else:
                     # 开空
-                    coin_short_usdt = coin_short.upper()+'USDT'
+                    coin_short_usdt = coin_name.upper()+'USDT'
                     coin_short_volumePlace = all_volumePlace[coin_short_usdt]
                     coin_short_price = get_price(symbol=coin_short_usdt)
                     coin_short_num = truncate(big_order_value*contract_num/coin_short_price, decimals=coin_short_volumePlace)
@@ -1235,12 +1236,12 @@ while True:
                         if now_minute in (15,30,45) and now_second in (0,1,2):
                             current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
                             content_3 = f'时间:{current_time}全部交易对正在监控中，盈利为{total_unrealizedPL}' + '\n'
-                            write_txt(content_3)
+                            #write_txt(content_3)
 
         else:
             now_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
             content_4 = f'今日不开单,目前时间为：{now_time}' + '\n'
-            write_txt(content_5)
+            #write_txt(content_5)
 
     else:
         now_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
@@ -1253,5 +1254,4 @@ while True:
         if now_minute in (15,30,45) and now_second in (0,1,2):
             current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
             content_5 = f'已经止盈或止损，程序时间监控中待重启,目前时间为：{now_time}' + '\n'
-            write_txt(content_5)
-            write_txt(content_5)
+            #write_txt(content_5)
