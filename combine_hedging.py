@@ -128,7 +128,7 @@ API_KEY = 'bg_42d96db83714abb3757250cef9ba7752'
 PASSPHRASE = 'HBLww130130130'
 margein_coin = 'USDT'
 futures_type = 'USDT-FUTURES'
-order_value = 1500
+order_value = 20
 contract_num = 20
 
 def get_timestamp():
@@ -1078,7 +1078,7 @@ while True:
         if len(order_data)>0:
             order_data = order_data.reset_index(drop=True)
 
-        monitor_model_res = pd.concat([model_1_res_1,model_2_res,model_3_res_1,model_4_res_1])
+        monitor_model_res = pd.concat([model_1_res_1,model_2_res_1,model_3_res_1,model_4_res_1])
         monitor_model_res = monitor_model_res.dropna()
         monitor_model_res = monitor_model_res.sort_values(by='model')
         monitor_model_res = monitor_model_res.reset_index(drop=True)
@@ -1151,7 +1151,6 @@ while True:
 
         if len(order_data) > 0:
             order_data['direction'] = order_data.apply(lambda x:x[1]/np.abs(x[1]),axis=1)
-            print('原始开单结果')
             print(order_data)
             #open_oder_info = pd.DataFrame()
             for odr in range(len(order_data)):
@@ -1173,7 +1172,7 @@ while True:
                     #open_oder_info = pd.concat([open_oder_info,order_info])
                 else:
                     # 开空
-                    coin_short_usdt = coin_name.upper()+'USDT'
+                    coin_short_usdt = coin_short.upper()+'USDT'
                     coin_short_volumePlace = all_volumePlace[coin_short_usdt]
                     coin_short_price = get_price(symbol=coin_short_usdt)
                     coin_short_num = truncate(big_order_value*contract_num/coin_short_price, decimals=coin_short_volumePlace)
@@ -1203,9 +1202,8 @@ while True:
                 print('总的盈利为')
                 print(total_unrealizedPL)
                 if total_unrealizedPL/total_value > 2 or total_unrealizedPL/total_value < -0.8:
-                    print('平全仓')
+                    # 平全仓
                     for p in range(len(order_data)):
-                        time.sleep(1)
                         dire = order_data['direction'][p]
                         coin_name = order_data['coin'][p]
                         coin_usdt = coin_name.upper()+'USDT'
@@ -1226,17 +1224,14 @@ while True:
                     if now_date_part == date_part and int(now_hour)==8:
                         # 平仓
                         for p in range(len(order_data)):
-                            time.sleep(1)
                             dire = order_data['direction'][p]
-                            coin_name = order_data['coin'][p]
-                            coin_usdt = coin_name.upper()+'USDT'
+                            coin_usdt = order_data['coin'][p].upper()+'USDT'
                             if dire == 1:
                                 close_state(crypto_usdt=coin_usdt,holdSide='long')
                             else:
                                 close_state(crypto_usdt=coin_usdt,holdSide='short')
                         position = 'close'
                     else:
-                        print('继续监控')
                         if now_minute in (15,30,45) and now_second in (0,1,2):
                             current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
                             content_3 = f'时间:{current_time}全部交易对正在监控中，盈利为{total_unrealizedPL}' + '\n'
@@ -1258,4 +1253,5 @@ while True:
         if now_minute in (15,30,45) and now_second in (0,1,2):
             current_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
             content_5 = f'已经止盈或止损，程序时间监控中待重启,目前时间为：{now_time}' + '\n'
+            write_txt(content_5)
             write_txt(content_5)
