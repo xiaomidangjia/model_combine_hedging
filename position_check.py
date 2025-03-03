@@ -212,7 +212,9 @@ def get_position(API_SECRET_KEY,API_KEY,PASSPHRASE):
 
 res_df = pd.DataFrame()
 
-
+API_SECRET_KEY = 'ca8d708b774782ce0fd09c78ba5c19e1e421d5fd2a78964359e6eb306cf15c67'
+API_KEY = 'bg_42d96db83714abb3757250cef9ba7752'
+PASSPHRASE = 'HBLww130130130'
 result = get_position(API_SECRET_KEY,API_KEY,PASSPHRASE)
 if len(result) > 0:
     result = result['data']
